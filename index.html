@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Quiz</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+        }
+
+        .container {
+            text-align: center;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        input[type="text"] {
+            display: block;
+            width: 200px;
+            margin: 10px auto;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            display: block;
+            width: 120px;
+            margin: 10px auto;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #0056b3;
+        }
+
+        #toggle-debug-button {
+            background-color: #28a745;
+        }
+
+        #toggle-debug-button:hover {
+            background-color: #218838;
+        }
+
+        #next-button {
+            display: none;
+        }
+
+        #toggle-language-button {
+            background-color: #c10bee;
+        }
+
+        #debug-container {
+            margin-top: 20px;
+            text-align: left;
+            display: none;
+        }
+
+        #debug-info {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            padding: 10px;
+            border-radius: 5px;
+            max-width: 300px;
+            margin: 0 auto;
+            white-space: pre-wrap;
+        }
+
+        .spacer {
+            height: 100px; /* Määritä välikkeen korkeus */
+        }
+
+        .answers {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .answer-button {
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .answer-button:hover {
+            background-color: #e0e0e0;
+        }
+
+        .score {
+            margin-top: 20px;
+        }
+        .button-container {
+            display: grid;
+            grid-template-columns: repeat(2, auto);
+            gap: 10px;
+            justify-content: center;
+        }
+        /*#wrong-text {
+            color: white;
+        }*/
+    </style>
+</head>
+<body>
+    <div class="container">
+        <input type="text" id="question" readonly>
+        <div class="answers" id="answers"></div>
+        <div class="score">
+            <span id="correct-text">Oikein:</span> <span id="correct-count">0</span> | <span id="wrong-text">Väärin:</span> <span id="wrong-count">0</span> | <span id="skipped-text">Ohitettu:</span> <span id="skipped-count">0</span>
+        </div>
+        <input type="text" id="answer" readonly>
+        <button id="ok-button">Näytä vastaus</button>
+        <div class="spacer"></div> <!-- Tyhjä osio välikkeeksi -->
+        <button id="next-button">Seuraava</button>
+        <div class="button-container">
+            <button id="toggle-language-button">Vaihda kieli</button>
+            <button id="toggle-answers">Piilota vastaukset</button>
+        </div>
+        <div class="score">
+            <label for="count-of-answers">Vastausten määrä:</label>
+            <input type="text" id="count-of-answers" value="5">
+        </div>
+        
+        <!--<button id="toggle-debug-button">Näytä debug-info</button>-->
+    </div>
+    <div id="debug-container">
+        <h3>Debug Info</h3>
+        <pre id="debug-info"></pre>
+    </div>
+    
+    <script src="words.js"></script>
+    <script>
+        let currentWordIndex = 0;
+        let vastaus = "";
+        let isEnglishToFinnish = true;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let skippedCount = 0;
+        let countOfAnswers = 5;
+
+        function showRandomWord() {
+            let minCount = Math.min(...words.map(word => word.count));
+            let minCountWords = words.filter(word => word.count === minCount);
+            currentWordIndex = Math.floor(Math.random() * minCountWords.length);
+            if (isEnglishToFinnish) {
+                document.getElementById("question").value = minCountWords[currentWordIndex].question;
+                vastaus = minCountWords[currentWordIndex].answer;
+            } else {
+                document.getElementById("question").value = minCountWords[currentWordIndex].answer;
+                vastaus = minCountWords[currentWordIndex].question;
+            }
+            document.getElementById("answers").innerHTML = generateAnswerButtons(vastaus);
+            minCountWords[currentWordIndex].count++;
+            updateDebugInfo();
+            document.getElementById("ok-button").textContent = "Näytä vastaus";
+            document.getElementById("answer").value = "";
+        }
+
+        function generateAnswerButtons(correctAnswer) {
+            let answers = [correctAnswer];
+            while (answers.length < countOfAnswers) {
+                let randomAnswer
+                if (isEnglishToFinnish){
+                    randomAnswer = words[Math.floor(Math.random() * words.length)].answer;
+                } else {
+                    randomAnswer = words[Math.floor(Math.random() * words.length)].question;
+                }
+
+                if (!answers.includes(randomAnswer)) {
+                    answers.push(randomAnswer);
+                }
+            }
+            answers = answers.sort();
+            return answers.map(answer => `<button class="answer-button" onclick="checkAnswer('${answer}')">${answer}</button>`).join('');
+        }
+
+        function checkAnswer(selectedAnswer) {
+            if (selectedAnswer === vastaus) {
+                correctCount++;
+                document.getElementById("wrong-text" ).style.color = "black";
+                document.getElementById("correct-text" ).style.color = "green";
+                document.getElementById("skipped-text" ).style.color = "black";
+                //alert("Oikein!");
+            } else {
+                wrongCount++;
+                document.getElementById("wrong-text" ).style.color = "red";
+                document.getElementById("correct-text" ).style.color = "black";
+                document.getElementById("skipped-text" ).style.color = "black";
+                //alert("Väärin!");
+            }
+            document.getElementById("correct-count").textContent = correctCount;
+            document.getElementById("wrong-count").textContent = wrongCount;
+            document.getElementById("answer").value = vastaus;
+            document.getElementById("ok-button").textContent = "Seuraava sana";
+        }
+        // Näytetään vastaus tai seuraava sana painamalla OK
+        document.getElementById("ok-button").addEventListener("click", function() {
+            if (this.textContent === "Näytä vastaus") {
+                skippedCount++;
+                document.getElementById("skipped-count").textContent = skippedCount;
+                document.getElementById("correct-text" ).style.color = "black";
+                document.getElementById("wrong-text" ).style.color = "black";
+                document.getElementById("skipped-text" ).style.color = "blue";
+                document.getElementById("answer").value = vastaus;
+                this.textContent = "Seuraava sana";
+            } else {
+                showRandomWord();
+            }
+        });
+
+        document.getElementById("next-button").addEventListener("click", function() {
+            showRandomWord();
+        });
+
+        document.getElementById("toggle-language-button").addEventListener("click", function() {
+            isEnglishToFinnish = !isEnglishToFinnish;
+            showRandomWord();
+        });
+
+        document.getElementById("count-of-answers").addEventListener("change", function() {
+            countOfAnswers = parseInt(this.value);
+            showRandomWord();
+        });
+
+        document.getElementById("toggle-answers").addEventListener("click", function() {
+            var answers = document.getElementById("answers");
+            if (answers.style.display === "none") {
+                answers.style.display = "flex";
+                this.textContent = "Piilota vastaukset";
+            } else {
+                answers.style.display = "none";
+                this.textContent = "Näytä vastaukset";
+            }
+        });
+
+        function updateDebugInfo() {
+            const debugInfo = words.map(word => `${word.question}: ${word.count}`).join('\n');
+            document.getElementById("debug-info").textContent = debugInfo;
+        }
+
+        showRandomWord();
+
+        document.getElementById("toggle-debug-button").addEventListener("click", function() {
+            var debugContainer = document.getElementById("debug-container");
+            if (debugContainer.style.display === "none") {
+                debugContainer.style.display = "block";
+                this.textContent = "Piilota debug-info";
+            } else {
+                debugContainer.style.display = "none";
+                this.textContent = "Näytä debug-info";
+            }
+        });
+    </script>
+</body>
+</html>
