@@ -1,190 +1,394 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Word Quiz</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-        }
-
-        .container {
-            text-align: center;
-            background-color: #fff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        input[type="text"] {
-            display: block;
-            width: 200px;
-            margin: 10px auto;
-            padding: 10px;
-            text-align: center;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            font-size: 16px;
-        }
-
-        button {
-            display: block;
-            width: 120px;
-            margin: 10px auto;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: white;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        button:hover {
-            background-color: #0056b3;
-        }
-
-        #toggle-debug-button {
-            background-color: #28a745;
-        }
-
-        #toggle-debug-button:hover {
-            background-color: #218838;
-        }
-
-        #next-button {
-            display: none;
-        }
-
-        #toggle-language-button {
-            background-color: #c10bee;
-        }
-
-        #debug-container {
-            margin-top: 20px;
-            text-align: left;
-            display: none;
-        }
-
-        #debug-info {
-            background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 10px;
-            border-radius: 5px;
-            max-width: 300px;
-            margin: 0 auto;
-            white-space: pre-wrap;
-        }
-
-        .spacer {
-            height: 100px; /* Määritä välikkeen korkeus */
-        }
-
-        .answers {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        .answer-button {
-            margin: 5px;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            background-color: #007bff;
-            color: #ffffff;
-            cursor: pointer;
-        }
-
-        .answer-button:hover {
-            background-color: #e0e0e0;
-        }
-
-        .score {
-            margin-top: 20px;
-        }
-        .button-container {
-            display: grid;
-            grid-template-columns: repeat(2, auto);
-            gap: 10px;
-            justify-content: center;
-        }
-        /*#wrong-text {
-            color: white;
-        }*/
-    </style>
-</head>
-<body>
-    <div class="container">
-        <input type="text" id="question" readonly>
-        <div class="answers" id="answers"></div>
-        <div class="score">
-            <span id="correct-text">Oikein:</span> <span id="correct-count">0</span> | <span id="wrong-text">Väärin:</span> <span id="wrong-count">0</span> | <span id="skipped-text">Ohitettu:</span> <span id="skipped-count">0</span>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Word Quiz</title>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                min-height: 100vh;
+                margin: 0;
+                font-family: Arial, sans-serif;
+                background-color: #f4f4f4;
+            }
+    
+            .main-container {
+                display: flex;
+                flex-direction: row;
+                align-items: flex-start;
+            }
+    
+            .container {
+                text-align: center;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                margin: 10px;
+            }
+    
+            input[type="text"] {
+                display: block;
+                width: 200px;
+                margin: 10px auto;
+                padding: 10px;
+                text-align: center;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 16px;
+            }
+    
+            button {
+                display: block;
+                width: 120px;
+                margin: 10px auto;
+                padding: 10px;
+                border: none;
+                border-radius: 5px;
+                background-color: #007bff;
+                color: white;
+                cursor: pointer;
+                font-size: 16px;
+            }
+    
+            button:hover {
+                background-color: #0056b3;
+            }
+    
+            #toggle-debug-button {
+                background-color: #28a745;
+                /*poista, jos haluat debugata*/
+                display: none;
+            }
+    
+            #toggle-debug-button:hover {
+                background-color: #218838;
+            }
+    
+            #next-button {
+                display: none;
+            }
+    
+            #toggle-language-button {
+                background-color: #c10bee;
+            }
+            #toggle-language-button:hover {
+                background-color: #b94fd6;
+            }
+    
+            #debug-container {
+                text-align: center;
+                background-color: #fff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                margin: 10px;
+                display: none;
+            }
+    
+            #debug-info {
+                background-color: #fff;
+                border: 1px solid #ccc;
+                padding: 10px;
+                border-radius: 5px;
+                max-width: 300px;
+                margin: 0 auto;
+                white-space: pre-wrap;
+            }
+    
+            .spacer {
+                height: 20px;
+            }
+    
+            .answers {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                margin-top: 20px;
+            }
+    
+            .answer-button {
+                margin: 5px;
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                background-color: #007bff;
+                color: #ffffff;
+                cursor: pointer;
+            }
+    
+            .answer-button:hover {
+                background-color: #e0e0e0;
+            }
+    
+            .score, .counter {
+                margin-top: 20px;
+            }
+    
+            .button-container {
+                display: grid;
+                grid-template-columns: repeat(3, auto);
+                gap: 10px;
+                justify-content: center;
+                align-items: stretch;
+            }
+    
+            .hidden {
+                display: none;
+            }
+    
+            #overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: rgba(0, 0, 0, 0.5);
+                z-index: 999;
+            }
+    
+            #settings-menu {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background-color: rgb(62, 63, 56);
+                padding: 20px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+                border-radius: 10px;
+                z-index: 1000;
+            }
+    
+            #settings-button {
+                position: fixed;
+                top: 10px;
+                right: 10px;
+                padding: 10px 20px;
+                background-color: #007bff;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+    
+            #settings-button:hover {
+                background-color: #0056b3;
+            }
+    
+            .sulje-container {
+                margin-top: 20px;
+            }
+    
+            #close-settings-button {
+                padding: 10px 20px;
+                background-color: #007bff;
+                float: right;
+            }
+    
+            #close-settings-button:hover {
+                background-color: #0056b3;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="main-container">
+            <div class="container">
+                <div class="spacer"></div>
+                <div id="overlay" class="hidden"></div>
+                <input type="text" id="question" readonly>
+                <div class="answers" id="answers"></div>
+                <div class="score">
+                    <span id="correct-text">Oikein:</span> <span id="correct-count">0</span> | 
+                    <span id="wrong-text">Väärin:</span> <span id="wrong-count">0</span> | 
+                    <span id="skipped-text">Ohitettu:</span> <span id="skipped-count">0</span>
+                </div>
+                <input type="text" id="answer" readonly>
+                <button id="ok-button">Näytä vastaus</button>
+                <div class="spacer"></div>
+                <button id="next-button">Seuraava</button>
+                <button id="settings-button">Asetukset</button>
+                <div id="settings-menu" class="hidden">
+                    <div class="button-container">
+                        <button id="toggle-language-button">Vaihda kieli</button>
+                        <button id="delete-score">Nollaa pisteet</button>
+                        <button id="toggle-answers">Piilota vastaukset</button>
+                    </div>
+                    <div class="counter">
+                        <label for="count-of-answers">Vastausten määrä:</label>
+                        <input type="text" id="count-of-answers" value="5">
+                    </div>
+                    <div class="sulje-container">
+                        <button id="close-settings-button">Sulje</button>
+                    </div>
+                </div>
+                <button id="toggle-debug-button">Näytä debug-info</button>
+            </div>
+            <div id="debug-container">
+                <h3>Debug Info</h3>
+                <pre id="debug-info"></pre>
+            </div>
         </div>
-        <input type="text" id="answer" readonly>
-        <button id="ok-button">Näytä vastaus</button>
-        <div class="spacer"></div> <!-- Tyhjä osio välikkeeksi -->
-        <button id="next-button">Seuraava</button>
-        <div class="button-container">
-            <button id="toggle-language-button">Vaihda kieli</button>
-            <button id="toggle-answers">Piilota vastaukset</button>
-        </div>
-        <div class="score">
-            <label for="count-of-answers">Vastausten määrä:</label>
-            <input type="text" id="count-of-answers" value="5">
-        </div>
-        
-        <!--<button id="toggle-debug-button">Näytä debug-info</button>-->
-    </div>
-    <div id="debug-container">
-        <h3>Debug Info</h3>
-        <pre id="debug-info"></pre>
-    </div>
     
     <script src="words.js"></script>
     <script>
         let currentWordIndex = 0;
         let vastaus = "";
-        let isEnglishToFinnish = true;
-        let correctCount = 0;
-        let wrongCount = 0;
-        let skippedCount = 0;
+        let kysymys = "";
+        let isFinnishToEnglish = true;
+        let correctCountFinnish = 0;
+        let correctCountEnglish = 0;
+        let wrongCountFinnish = 0;
+        let wrongCountEnglish = 0;
+        let skippedCountFinnish = 0;
+        let skippedCountEnglish = 0;
         let countOfAnswers = 5;
+        let gameWords = words;
+
+        // Alusta laskurit, jos niitä ei ole vielä tallennettu
+        if (!localStorage.getItem('isfinnishtoenglish')) {
+            localStorage.setItem('isfinnishtoenglish', true);
+        } else {
+            isFinnishToEnglish = localStorage.getItem('isfinnishtoenglish') === 'true';
+        }
+        if (!localStorage.getItem('correctAnswersFinnish')) {
+            localStorage.setItem('correctAnswersFinnish', 0);
+        } else {
+            correctCountFinnish = parseInt(localStorage.getItem('correctAnswersFinnish'));
+        }
+        if (!localStorage.getItem('correctAnswersEnglish')) {
+            localStorage.setItem('correctAnswersEnglish', 0);
+        }else{
+            correctCountEnglish = parseInt(localStorage.getItem('correctAnswersEnglish'));
+        }
+        if (!localStorage.getItem('wrongAnswersFinnish')) {
+            localStorage.setItem('wrongAnswersFinnish', 0);
+        } else {
+            wrongCountFinnish = parseInt(localStorage.getItem('wrongAnswersFinnish'));
+        }
+        if (!localStorage.getItem('wrongAnswersEnglish')) {
+            localStorage.setItem('wrongAnswersEnglish', 0);
+        } else {
+            wrongCountEnglish = parseInt(localStorage.getItem('wrongAnswersEnglish'));
+        }
+        if (!localStorage.getItem('skippedAnswersFinnish')) {
+            localStorage.setItem('skippedAnswersFinnish', 0);
+        } else {
+            skippedCountFinnish = parseInt(localStorage.getItem('skippedAnswersFinnish'));
+        }
+        if (!localStorage.getItem('skippedAnswersEnglish')) {
+            localStorage.setItem('skippedAnswersEnglish', 0);
+        } else {
+            skippedCountEnglish = parseInt(localStorage.getItem('skippedAnswersEnglish'));
+        }
+        if (!localStorage.getItem('gameWords')) {
+            localStorage.setItem('gameWords', JSON.stringify(words));
+        } else {
+            gameWords = JSON.parse(localStorage.getItem('gameWords'));
+        }
+        if (!localStorage.getItem('countOfAnswers')) {
+            localStorage.setItem('countOfAnswers', 5);
+        } else {
+            countOfAnswers = parseInt(localStorage.getItem('countOfAnswers'));
+            if (countOfAnswers > 50) {
+                countOfAnswers = 50;
+                localStorage.setItem('countOfAnswers', countOfAnswers);
+            }
+        }
+        document.getElementById("count-of-answers").value = countOfAnswers;
+
+        if (isFinnishToEnglish) {
+            document.getElementById("correct-count").textContent = correctCountFinnish;
+            document.getElementById("wrong-count").textContent = wrongCountFinnish;
+            document.getElementById("skipped-count").textContent = skippedCountFinnish;
+        } else {
+            document.getElementById("correct-count").textContent = correctCountEnglish;
+            document.getElementById("wrong-count").textContent = wrongCountEnglish;
+            document.getElementById("skipped-count").textContent = skippedCountEnglish;
+        }
 
         function showRandomWord() {
-            let minCount = Math.min(...words.map(word => word.count));
-            let minCountWords = words.filter(word => word.count === minCount);
+            let minCount;
+            let minCountWords;
+            if (isFinnishToEnglish) {
+                minCount = Math.min(...gameWords.map(word => word.countFinnish));
+                minCountWords = gameWords.filter(word => word.countFinnish === minCount);
+            }  else {
+                minCount = Math.min(...gameWords.map(word => word.countEnglish));
+                minCountWords = gameWords.filter(word => word.countEnglish === minCount);
+            }
             currentWordIndex = Math.floor(Math.random() * minCountWords.length);
-            if (isEnglishToFinnish) {
+            if (isFinnishToEnglish) {
                 document.getElementById("question").value = minCountWords[currentWordIndex].question;
                 vastaus = minCountWords[currentWordIndex].answer;
+                kysymys = minCountWords[currentWordIndex].question;
+                document.getElementById("correct-count").textContent = correctCountFinnish;
+                document.getElementById("wrong-count").textContent = wrongCountFinnish;
+                document.getElementById("skipped-count").textContent = skippedCountFinnish;
             } else {
                 document.getElementById("question").value = minCountWords[currentWordIndex].answer;
                 vastaus = minCountWords[currentWordIndex].question;
+                kysymys = minCountWords[currentWordIndex].answer;
+                document.getElementById("correct-count").textContent = correctCountEnglish;
+                document.getElementById("wrong-count").textContent = wrongCountEnglish;
+                document.getElementById("skipped-count").textContent = skippedCountEnglish;
             }
             document.getElementById("answers").innerHTML = generateAnswerButtons(vastaus);
-            minCountWords[currentWordIndex].count++;
+            //minCountWords[currentWordIndex].count++;
             updateDebugInfo();
             document.getElementById("ok-button").textContent = "Näytä vastaus";
             document.getElementById("answer").value = "";
+            localStorage.setItem('gameWords', JSON.stringify(gameWords));
+        }
+
+        // Funktio päivittää oikein vastauksien laskuria
+        function incrementCorrectAnswers() {
+            if (isFinnishToEnglish) {
+                correctCountFinnish++;
+                localStorage.setItem('correctAnswersFinnish', correctCountFinnish);
+            } else {
+                correctCountEnglish++;
+                localStorage.setItem('correctAnswersEnglish', correctCountEnglish);
+            }
+        }
+
+        // Funktio päivittää väärin vastauksien laskuria
+        function incrementWrongAnswers() {
+            if (isFinnishToEnglish) {
+                wrongCountFinnish++;
+                localStorage.setItem('wrongAnswersFinnish', wrongCountFinnish);
+            } else {
+                wrongCountEnglish++;
+                localStorage.setItem('wrongAnswersEnglish', wrongCountEnglish);
+            }
+        }
+
+        function incrementSkippedAnswers() {
+            if (isFinnishToEnglish) {
+                skippedCountFinnish++;
+                localStorage.setItem('skippedAnswersFinnish', skippedCountFinnish);
+            } else {
+                skippedCountEnglish++;
+                localStorage.setItem('skippedAnswersEnglish', skippedCountEnglish);
+            }
         }
 
         function generateAnswerButtons(correctAnswer) {
             let answers = [correctAnswer];
+            //tarkista, että countofanswers on pienempi kuin gameWords.length
+            if (countOfAnswers > gameWords.length) {
+                countOfAnswers = gameWords.length;
+                document.getElementById("count-of-answers").value = countOfAnswers;
+            }
+
             while (answers.length < countOfAnswers) {
                 let randomAnswer
-                if (isEnglishToFinnish){
-                    randomAnswer = words[Math.floor(Math.random() * words.length)].answer;
+                if (isFinnishToEnglish){
+                    randomAnswer = gameWords[Math.floor(Math.random() * gameWords.length)].answer;
                 } else {
-                    randomAnswer = words[Math.floor(Math.random() * words.length)].question;
+                    randomAnswer = gameWords[Math.floor(Math.random() * gameWords.length)].question;
                 }
 
                 if (!answers.includes(randomAnswer)) {
@@ -195,35 +399,86 @@
             return answers.map(answer => `<button class="answer-button" onclick="checkAnswer('${answer}')">${answer}</button>`).join('');
         }
 
+        function incrementWordsCount(question, answer) {
+            //kasvatetaan countteria, jos kysymys ja vastaus täsmäävät
+            gameWords = gameWords.map(word => {
+                if (word.question === question && word.answer === answer) {
+                    if (isFinnishToEnglish) {
+                        word.countFinnish++;
+                    } else {
+                        word.countEnglish++;
+                    }
+                }
+                return word;
+            });
+
+        }
+
         function checkAnswer(selectedAnswer) {
+            //estetään nappien painallusta toista kertaa ja väri harmaaksi
+            document.querySelectorAll(".answer-button").forEach(button => {
+                button.disabled = true;
+                button.style.backgroundColor = "#ccc";
+            });
             if (selectedAnswer === vastaus) {
-                correctCount++;
-                document.getElementById("wrong-text" ).style.color = "black";
+                //correctCountEnglish++;
                 document.getElementById("correct-text" ).style.color = "green";
-                document.getElementById("skipped-text" ).style.color = "black";
+                incrementCorrectAnswers();
+                if (isFinnishToEnglish) {
+                    incrementWordsCount(kysymys, vastaus);
+                } else {
+                    incrementWordsCount(vastaus, kysymys);
+                }
+                //painetun nappin väri vihreäksi
+                document.getElementById("answers").querySelectorAll(".answer-button").forEach(button => {
+                    if (button.textContent === vastaus) {
+                        button.style.backgroundColor = "green";
+                    }
+                });
                 //alert("Oikein!");
             } else {
-                wrongCount++;
+                //wrongCount++;
                 document.getElementById("wrong-text" ).style.color = "red";
-                document.getElementById("correct-text" ).style.color = "black";
-                document.getElementById("skipped-text" ).style.color = "black";
+                incrementWrongAnswers();
                 //alert("Väärin!");
+                //painetun nappin väri punaiseksi
+                document.getElementById("answers").querySelectorAll(".answer-button").forEach(button => {
+                    if (button.textContent === selectedAnswer) {
+                        button.style.backgroundColor = "red";
+                    }
+                    if (button.textContent === vastaus) {
+                        button.style.backgroundColor = "green";
+                    }
+                });
             }
-            document.getElementById("correct-count").textContent = correctCount;
-            document.getElementById("wrong-count").textContent = wrongCount;
+            if (isFinnishToEnglish) {
+                document.getElementById("correct-count").textContent = correctCountFinnish;
+                document.getElementById("wrong-count").textContent = wrongCountFinnish;
+            } else {
+                document.getElementById("correct-count").textContent = correctCountEnglish;
+                document.getElementById("wrong-count").textContent = wrongCountEnglish;
+            }
             document.getElementById("answer").value = vastaus;
             document.getElementById("ok-button").textContent = "Seuraava sana";
+        
         }
+
         // Näytetään vastaus tai seuraava sana painamalla OK
         document.getElementById("ok-button").addEventListener("click", function() {
+            document.getElementById("wrong-text" ).style.color = "black";
+            document.getElementById("correct-text" ).style.color = "black";
+            document.getElementById("skipped-text" ).style.color = "black";
             if (this.textContent === "Näytä vastaus") {
-                skippedCount++;
-                document.getElementById("skipped-count").textContent = skippedCount;
-                document.getElementById("correct-text" ).style.color = "black";
-                document.getElementById("wrong-text" ).style.color = "black";
+                //skippedCount++;
+                if (isFinnishToEnglish) {
+                    document.getElementById("skipped-count").textContent = skippedCountFinnish;
+                } else {
+                    document.getElementById("skipped-count").textContent = skippedCountEnglish;
+                }
                 document.getElementById("skipped-text" ).style.color = "blue";
                 document.getElementById("answer").value = vastaus;
                 this.textContent = "Seuraava sana";
+                incrementSkippedAnswers();
             } else {
                 showRandomWord();
             }
@@ -234,12 +489,18 @@
         });
 
         document.getElementById("toggle-language-button").addEventListener("click", function() {
-            isEnglishToFinnish = !isEnglishToFinnish;
+            isFinnishToEnglish = !isFinnishToEnglish;
+            if (isFinnishToEnglish) {
+                localStorage.setItem('isfinnishtoenglish', true);
+            } else {
+                localStorage.setItem('isfinnishtoenglish', false);
+            }
             showRandomWord();
         });
 
         document.getElementById("count-of-answers").addEventListener("change", function() {
             countOfAnswers = parseInt(this.value);
+            localStorage.setItem('countOfAnswers', countOfAnswers);
             showRandomWord();
         });
 
@@ -254,8 +515,37 @@
             }
         });
 
+        document.getElementById("delete-score").addEventListener("click", function() {
+            //kysytään vielä varmistus
+            if (confirm("Haluatko varmasti nollata pisteet?")) {
+                localStorage.setItem('correctAnswersEnglish', 0);
+                localStorage.setItem('correctAnswersFinnish', 0);
+                localStorage.setItem('wrongAnswersEnglish', 0);
+                localStorage.setItem('wrongAnswersFinnish', 0);
+                localStorage.setItem('skippedAnswers', 0);
+                localStorage.setItem('gameWords', JSON.stringify(words));
+                correctCountEnglish = 0;
+                correctCountFinnish = 0;
+                wrongCountEnglish = 0;
+                wrongCountFinnish = 0;
+                skippedCountEnglish = 0;
+                skippedCountFinnish = 0;
+                gameWords = words;
+                if (isFinnishToEnglish) {
+                    document.getElementById("correct-count").textContent = correctCountFinnish;
+                    document.getElementById("wrong-count").textContent = wrongCountFinnish;
+                    document.getElementById("skipped-count").textContent = skippedCountFinnish;
+                } else {
+                    document.getElementById("correct-count").textContent = correctCountEnglish;
+                    document.getElementById("wrong-count").textContent = wrongCountEnglish;
+                    document.getElementById("skipped-count").textContent = skippedCountEnglish;
+                }
+                updateDebugInfo();
+            }
+        });
+
         function updateDebugInfo() {
-            const debugInfo = words.map(word => `${word.question}: ${word.count}`).join('\n');
+            const debugInfo = gameWords.map(word => `${word.question} - ${word.answer} - ${word.countEnglish} - ${word.countFinnish}`).join('\n');
             document.getElementById("debug-info").textContent = debugInfo;
         }
 
@@ -263,14 +553,34 @@
 
         document.getElementById("toggle-debug-button").addEventListener("click", function() {
             var debugContainer = document.getElementById("debug-container");
-            if (debugContainer.style.display === "none") {
-                debugContainer.style.display = "block";
+            if (debugContainer.style.display === "grid") {
+                debugContainer.style.display = "none";
                 this.textContent = "Piilota debug-info";
             } else {
-                debugContainer.style.display = "none";
+                debugContainer.style.display = "grid";
                 this.textContent = "Näytä debug-info";
             }
         });
+
+        document.getElementById("settings-button").addEventListener("click", function() {
+            var settingsMenu = document.getElementById("settings-menu");
+            var overlay = document.getElementById("overlay");
+            if (settingsMenu.classList.contains("hidden")) {
+                settingsMenu.classList.remove("hidden");
+                overlay.classList.remove("hidden");
+            } else {
+                settingsMenu.classList.add("hidden");
+                overlay.classList.add("hidden");
+            }
+        });
+
+        document.getElementById("close-settings-button").addEventListener("click", function() {
+            var settingsMenu = document.getElementById("settings-menu");
+            var overlay = document.getElementById("overlay");
+            settingsMenu.classList.add("hidden");
+            overlay.classList.add("hidden");
+        });
+
     </script>
 </body>
 </html>
