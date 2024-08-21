@@ -247,67 +247,84 @@
         let countOfAnswers = 5;
         let gameWords = words;
 
-        // Alusta laskurit, jos niitä ei ole vielä tallennettu
-        if (!localStorage.getItem('isfinnishtoenglish')) {
-            localStorage.setItem('isfinnishtoenglish', true);
-        } else {
-            isFinnishToEnglish = localStorage.getItem('isfinnishtoenglish') === 'true';
-        }
-        if (!localStorage.getItem('correctAnswersFinnish')) {
-            localStorage.setItem('correctAnswersFinnish', 0);
-        } else {
-            correctCountFinnish = parseInt(localStorage.getItem('correctAnswersFinnish'));
-        }
-        if (!localStorage.getItem('correctAnswersEnglish')) {
-            localStorage.setItem('correctAnswersEnglish', 0);
-        }else{
-            correctCountEnglish = parseInt(localStorage.getItem('correctAnswersEnglish'));
-        }
-        if (!localStorage.getItem('wrongAnswersFinnish')) {
-            localStorage.setItem('wrongAnswersFinnish', 0);
-        } else {
-            wrongCountFinnish = parseInt(localStorage.getItem('wrongAnswersFinnish'));
-        }
-        if (!localStorage.getItem('wrongAnswersEnglish')) {
-            localStorage.setItem('wrongAnswersEnglish', 0);
-        } else {
-            wrongCountEnglish = parseInt(localStorage.getItem('wrongAnswersEnglish'));
-        }
-        if (!localStorage.getItem('skippedAnswersFinnish')) {
-            localStorage.setItem('skippedAnswersFinnish', 0);
-        } else {
-            skippedCountFinnish = parseInt(localStorage.getItem('skippedAnswersFinnish'));
-        }
-        if (!localStorage.getItem('skippedAnswersEnglish')) {
-            localStorage.setItem('skippedAnswersEnglish', 0);
-        } else {
-            skippedCountEnglish = parseInt(localStorage.getItem('skippedAnswersEnglish'));
-        }
-        if (!localStorage.getItem('gameWords')) {
-            localStorage.setItem('gameWords', JSON.stringify(words));
-        } else {
-            gameWords = JSON.parse(localStorage.getItem('gameWords'));
-        }
-        if (!localStorage.getItem('countOfAnswers')) {
-            localStorage.setItem('countOfAnswers', 5);
-        } else {
-            countOfAnswers = parseInt(localStorage.getItem('countOfAnswers'));
-            if (countOfAnswers > 50) {
-                countOfAnswers = 50;
-                localStorage.setItem('countOfAnswers', countOfAnswers);
+        function init() {
+            currentWordIndex = 0;
+            vastaus = "";
+            kysymys = "";
+            isFinnishToEnglish = true;
+            correctCountFinnish = 0;
+            correctCountEnglish = 0;
+            wrongCountFinnish = 0;
+            wrongCountEnglish = 0;
+            skippedCountFinnish = 0;
+            skippedCountEnglish = 0;
+            countOfAnswers = 5;
+            gameWords = words;
+
+            // Alusta laskurit, jos niitä ei ole vielä tallennettu
+            if (!localStorage.getItem('isfinnishtoenglish')) {
+                localStorage.setItem('isfinnishtoenglish', true);
+            } else {
+                isFinnishToEnglish = localStorage.getItem('isfinnishtoenglish') === 'true';
+            }
+            if (!localStorage.getItem('correctAnswersFinnish')) {
+                localStorage.setItem('correctAnswersFinnish', 0);
+            } else {
+                correctCountFinnish = parseInt(localStorage.getItem('correctAnswersFinnish'));
+            }
+            if (!localStorage.getItem('correctAnswersEnglish')) {
+                localStorage.setItem('correctAnswersEnglish', 0);
+            }else{
+                correctCountEnglish = parseInt(localStorage.getItem('correctAnswersEnglish'));
+            }
+            if (!localStorage.getItem('wrongAnswersFinnish')) {
+                localStorage.setItem('wrongAnswersFinnish', 0);
+            } else {
+                wrongCountFinnish = parseInt(localStorage.getItem('wrongAnswersFinnish'));
+            }
+            if (!localStorage.getItem('wrongAnswersEnglish')) {
+                localStorage.setItem('wrongAnswersEnglish', 0);
+            } else {
+                wrongCountEnglish = parseInt(localStorage.getItem('wrongAnswersEnglish'));
+            }
+            if (!localStorage.getItem('skippedAnswersFinnish')) {
+                localStorage.setItem('skippedAnswersFinnish', 0);
+            } else {
+                skippedCountFinnish = parseInt(localStorage.getItem('skippedAnswersFinnish'));
+            }
+            if (!localStorage.getItem('skippedAnswersEnglish')) {
+                localStorage.setItem('skippedAnswersEnglish', 0);
+            } else {
+                skippedCountEnglish = parseInt(localStorage.getItem('skippedAnswersEnglish'));
+            }
+            if (!localStorage.getItem('gameWords')) {
+                localStorage.setItem('gameWords', JSON.stringify(words));
+            } else {
+                gameWords = JSON.parse(localStorage.getItem('gameWords'));
+            }
+            if (!localStorage.getItem('countOfAnswers')) {
+                localStorage.setItem('countOfAnswers', 5);
+            } else {
+                countOfAnswers = parseInt(localStorage.getItem('countOfAnswers'));
+                if (countOfAnswers > 50) {
+                    countOfAnswers = 50;
+                    localStorage.setItem('countOfAnswers', countOfAnswers);
+                }
+            }
+            document.getElementById("count-of-answers").value = countOfAnswers;
+
+            if (isFinnishToEnglish) {
+                document.getElementById("correct-count").textContent = correctCountFinnish;
+                document.getElementById("wrong-count").textContent = wrongCountFinnish;
+                document.getElementById("skipped-count").textContent = skippedCountFinnish;
+            } else {
+                document.getElementById("correct-count").textContent = correctCountEnglish;
+                document.getElementById("wrong-count").textContent = wrongCountEnglish;
+                document.getElementById("skipped-count").textContent = skippedCountEnglish;
             }
         }
-        document.getElementById("count-of-answers").value = countOfAnswers;
 
-        if (isFinnishToEnglish) {
-            document.getElementById("correct-count").textContent = correctCountFinnish;
-            document.getElementById("wrong-count").textContent = wrongCountFinnish;
-            document.getElementById("skipped-count").textContent = skippedCountFinnish;
-        } else {
-            document.getElementById("correct-count").textContent = correctCountEnglish;
-            document.getElementById("wrong-count").textContent = wrongCountEnglish;
-            document.getElementById("skipped-count").textContent = skippedCountEnglish;
-        }
+        init();
 
         function showRandomWord() {
             let minCount;
@@ -341,6 +358,7 @@
             document.getElementById("ok-button").textContent = "Näytä vastaus";
             document.getElementById("answer").value = "";
             localStorage.setItem('gameWords', JSON.stringify(gameWords));
+            console.log("init");
         }
 
         // Funktio päivittää oikein vastauksien laskuria
@@ -518,28 +536,14 @@
         document.getElementById("delete-score").addEventListener("click", function() {
             //kysytään vielä varmistus
             if (confirm("Haluatko varmasti nollata pisteet?")) {
-                localStorage.setItem('correctAnswersEnglish', 0);
-                localStorage.setItem('correctAnswersFinnish', 0);
-                localStorage.setItem('wrongAnswersEnglish', 0);
-                localStorage.setItem('wrongAnswersFinnish', 0);
-                localStorage.setItem('skippedAnswers', 0);
-                localStorage.setItem('gameWords', JSON.stringify(words));
-                correctCountEnglish = 0;
-                correctCountFinnish = 0;
-                wrongCountEnglish = 0;
-                wrongCountFinnish = 0;
-                skippedCountEnglish = 0;
-                skippedCountFinnish = 0;
-                gameWords = words;
-                if (isFinnishToEnglish) {
-                    document.getElementById("correct-count").textContent = correctCountFinnish;
-                    document.getElementById("wrong-count").textContent = wrongCountFinnish;
-                    document.getElementById("skipped-count").textContent = skippedCountFinnish;
-                } else {
-                    document.getElementById("correct-count").textContent = correctCountEnglish;
-                    document.getElementById("wrong-count").textContent = wrongCountEnglish;
-                    document.getElementById("skipped-count").textContent = skippedCountEnglish;
-                }
+                localStorage.clear();
+
+                document.getElementById("correct-count").textContent = 0;
+                document.getElementById("wrong-count").textContent = 0;
+                document.getElementById("skipped-count").textContent = 0;
+
+                init();
+                showRandomWord();
                 updateDebugInfo();
             }
         });
@@ -548,8 +552,6 @@
             const debugInfo = gameWords.map(word => `${word.question} - ${word.answer} - ${word.countEnglish} - ${word.countFinnish}`).join('\n');
             document.getElementById("debug-info").textContent = debugInfo;
         }
-
-        showRandomWord();
 
         document.getElementById("toggle-debug-button").addEventListener("click", function() {
             var debugContainer = document.getElementById("debug-container");
@@ -580,6 +582,8 @@
             settingsMenu.classList.add("hidden");
             overlay.classList.add("hidden");
         });
+
+        showRandomWord();
 
     </script>
 </body>
